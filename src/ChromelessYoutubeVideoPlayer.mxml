@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+				layout="absolute"
+				width="480" height="335" 
+				backgroundColor="0xFFFFFF"
+				creationComplete="init()" >
+	 
+	<mx:Script>
+		<![CDATA[
+			
+			import com.flexer.Youtube;
+			import com.flexer.skin.SliderThumbSkin;
+			
+			private var _youtube:Youtube; 
+			private var _myTimer:Timer  
+			
+			
+			private function init():void
+			{
+				_youtube = new Youtube(); 
+				
+				//set video ID 
+			    _youtube.videoId = "D-wvgqDWjnk"; 
+				_playerArea.addChild(_youtube);  
+				
+				//update slide bar timer
+				_myTimer = new Timer(250, 0);
+				_myTimer.addEventListener(TimerEvent.TIMER, timerHandler);
+				
+				startMovie(); 
+			}        
+			
+			public function startMovie():void
+			{ 
+				if ( _youtube != null )
+				{
+					//play the movie
+					_youtube.play();  
+					//start timer
+					_myTimer.start(); 
+				}
+			}
+			
+			
+			public function stopMovie():void
+			{
+				if (_youtube != null )
+				{
+					//stop all
+					_youtube.stop();
+					_myTimer.stop();  
+					track.value = 0; 
+				}
+			}
+			
+			
+			private function timerHandler(evt:TimerEvent):void
+			{  
+				//update time values for all components
+				if ( int(_youtube.getCurrentTime()) > -1 )
+				{
+					track.value = _youtube.getCurrentTime(); 
+					currentTimeLbl.text = _youtube.getCurrentTime().toString();
+					totalTimeLbl.text = _youtube.getDuration().toString();
+					track.maximum = _youtube.getDuration();
+				} 
+			}
+			
+			
+			protected function playBtn_clickHandler(event:MouseEvent):void
+			{
+				_youtube.play(); 
+			}
+			
+			
+			protected function pauseBtn_clickHandler(event:MouseEvent):void
+			{
+				_youtube.pause(); 
+			}
+			
+			
+			protected function muteBtn_clickHandler(event:MouseEvent):void
+			{
+				_youtube.mute(); 
+			}
+			
+			
+			protected function unMuteBtn_clickHandler(event:MouseEvent):void
+			{
+				_youtube.unMute(); 
+			}
+			 
+			
+		]]>
+	</mx:Script>
+	
+	
+	<mx:VBox width="100%" height="100%" verticalGap="3">
+		<mx:Spacer height="5" />
+		<!-- control bar -->
+		<mx:HBox height="20" width="100%" backgroundColor="0x000000" backgroundAlpha="1" horizontalGap="2"> 
+			<mx:Spacer width="5" />  
+			<mx:Button id="playBtn" width="20" height="20" click="playBtn_clickHandler(event)" skin="com.flexer.skin.PlayButtonSkin" />
+			<mx:Button id="pauseBtn" width="20" height="20" click="pauseBtn_clickHandler(event)" skin="com.flexer.skin.PauseButtonSkin" />  
+			<mx:Spacer width="5" />  
+			<mx:Button id="muteBtn" width="20" height="20" click="muteBtn_clickHandler(event)" skin="com.flexer.skin.MuteButtonSkin" />
+			<mx:Button id="unMuteBtn" width="20" height="20" click="unMuteBtn_clickHandler(event)" skin="com.flexer.skin.UnMuteButtonSkin" /> 
+			<mx:Spacer width="100%" />   
+			<mx:Label width="80" textAlign="right" text="Current time: " color="0xFFFFFF" />
+			<mx:Label id="currentTimeLbl" width="30" textAlign="right" color="0xFFFFFF" />
+			<mx:Spacer width="15" />
+			<mx:Label width="70" textAlign="right" text="Total time: " color="0xFFFFFF" />
+			<mx:Label id="totalTimeLbl" width="30" textAlign="right" color="0xFFFFFF" />
+			<mx:Spacer width="5" />
+		</mx:HBox>
+	
+		<!-- movie area -->
+		<mx:Canvas id="_playerArea" width="480" height="270" backgroundColor="#000000"  />
+	
+		<!-- time bar -->
+		<mx:HBox height="20" width="100%" backgroundColor="0x000000" backgroundAlpha="1" horizontalGap="2"> 
+			<mx:Spacer width="5" />
+			<!--
+			<mx:HSlider id="track" width="100%" minimum="0" maximum="171" showDataTip="false" top="-2" height="16"  
+						trackColors="[0x000000,0x000000]" mouseEnabled="true" allowTrackClick="true"  />  
+			-->
+			<mx:Spacer width="5" />
+		</mx:HBox>
+		<mx:Spacer height="5" />
+	</mx:VBox>
+	
+</mx:Application>

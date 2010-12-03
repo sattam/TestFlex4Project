@@ -1,0 +1,137 @@
+package com.flexer
+{
+	
+	import flash.display.Loader;
+	import flash.events.Event;
+	import flash.net.URLRequest;
+	import flash.system.Security;
+	
+	import mx.core.UIComponent; 
+        
+	public class Youtube extends UIComponent 
+	{
+		[Bindable]
+		private var _loader:Loader; 
+        private var _player:Object;  
+        private var _videoId:String;
+		private var _state:int = -1;
+        
+        public function Youtube()
+        { 
+        	super();
+        	Security.allowDomain("www.youtube.com");
+        	Security.allowDomain("video-stats.video.google.com");
+ 
+			 _loader  = new Loader();
+			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaderInit);
+			_loader.load(new URLRequest("http://www.youtube.com/apiplayer?version=3"));
+ 
+			 
+			addChild(_loader); 
+			
+        } 
+   
+		public function get state():int
+		{
+			return _state;
+		}
+
+        public function set videoId(v:String):void
+        {
+        	_videoId = v;
+        }
+ 
+ 		public function stop():void
+ 		{
+			if ( _player != null )
+ 				_player.stopVideo();
+ 		}
+ 
+ 		public function play():void
+ 		{
+			if ( _player != null )
+ 				_player.playVideo();
+ 		}
+ 		
+ 		public function pause():void
+ 		{
+			if ( _player != null )
+ 				_player.pauseVideo();
+ 		}
+ 		
+ 		public function mute():void
+ 		{
+			if ( _player != null )
+ 				_player.mute();
+ 		}
+ 
+ 		public function unMute():void
+ 		{
+			if ( _player != null )
+ 			 _player.unMute();
+ 		}
+ 		
+ 		public function seekTo(v:Number):void
+ 		{
+			if ( _player != null )
+ 				_player.seekTo(v,true)
+ 		}
+  
+ 		public function getDuration():int
+		{
+			if ( _player != null )
+				return int(_player.getDuration());
+			else
+				return -1;	
+		}
+		
+		
+		public function getCurrentTime():int
+		{
+			if ( _player != null )
+				return int(_player.getCurrentTime());
+			else
+				return -1;	
+		}
+		
+		private function onLoaderInit(event:Event):void {
+		     
+		    _loader.content.addEventListener("onReady", onPlayerReady);
+		    _loader.content.addEventListener("onError", onPlayerError);
+		    _loader.content.addEventListener("onStateChange", onPlayerStateChange);
+		    _loader.content.addEventListener("onPlaybackQualityChange",  onVideoPlaybackQualityChange);
+		}
+		
+		private function onPlayerReady(event:Event):void {
+		    // Event.data contains the event parameter, which is the Player API ID 
+		    //trace("player ready:", Object(event).data);
+		
+		    // Once this event has been dispatched by the player, we can use
+		    // cueVideoById, loadVideoById, cueVideoByUrl and loadVideoByUrl
+		    // to load a particular YouTube video.
+		    _player = _loader.content;
+		    _player.loadVideoById(_videoId);
+		    _player.setSize(580,327);   
+		}
+		
+		private function onPlayerError(event:Event):void {
+		    // Event.data contains the event parameter, which is the error code
+		  //  trace("player error:", Object(event).data);
+		}
+		
+		private function onPlayerStateChange(event:Event):void {
+		    // Event.data contains the event parameter, which is the new player state
+			_state = int(Object(event).data);
+		}
+		
+		private function onVideoPlaybackQualityChange(event:Event):void {
+		    // Event.data contains the event parameter, which is the new video quality
+		   // trace("video quality:", Object(event).data);
+		} 
+		
+		
+		
+		
+
+	}
+}
